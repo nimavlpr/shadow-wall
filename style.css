@@ -1,0 +1,15 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #000; /* رنگ پشت زمینه سیاه */
+    overflow: hidden; /* حذف اسکرول */
+    height: 100%;
+    display: flex;
+    justify_content: center;
+    align_items: center;
+}
+
+canvas {
+    display: block;
+    /* بعداً که عکس دیوار رو گرفتی، اینجا تنظیمش میکنیم */
+}
