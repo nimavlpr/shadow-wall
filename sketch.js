@@ -32,7 +32,7 @@ function preload() {
     // تصاویر
     hornImg = loadImage('assets/horn.png');
     haloImg = loadImage('assets/halo.png');
-    wallImg = loadImage('assets/wall2.jpg');
+    wallImg = loadImage('assets/wall2.webp');
     greenImg = loadImage('assets/alien.png');
     blueImg = loadImage('assets/crown.png');
 }
