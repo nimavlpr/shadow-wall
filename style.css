@@ -13,3 +13,13 @@ canvas {
     display: block;
     /* بعداً که عکس دیوار رو گرفتی، اینجا تنظیمش میکنیم */
 }
+
+.tag {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    color: #000;
+    background: rgba(255, 255, 255, 0.42);
+    padding: 10px 20px;
+    border-radius: 8px;
+}
