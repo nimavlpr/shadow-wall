@@ -287,30 +287,67 @@ function drawAccessory(data, drawX, drawY, currentW, currentH) {
 function calculateHeavyPhysics() {
     if (poses.length > 0) {
         let pose = poses[0];
+        // چک کردن وجود keypoints
         if (pose.keypoints && pose.keypoints.length > 0) {
             let nose = pose.keypoints[0];
+
+            // محاسبه سرعت لحظه‌ای کاربر
             let currentVx = (nose.x - userX);
             let currentVy = (nose.y - userY);
+
+            // نرم کردن حرکت ورودی (Input Smoothing)
+            // این عدد را روی 0.1 نگه دارید
             let accelerationX = currentVx - velocityX;
-            velocityX = lerp(velocityX, currentVx, 0.2);
-            velocityY = lerp(velocityY, currentVy, 0.2);
-            userX = nose.x; userY = nose.y;
+            velocityX = lerp(velocityX, currentVx, 0.1);
+            velocityY = lerp(velocityY, currentVy, 0.1);
 
-            let tension = 0.2;
-            let impulseMultiplier = 8.0;
+            userX = nose.x;
+            userY = nose.y;
 
-            let forceX = -shadowOffsetX * tension;
-            let forceY = -shadowOffsetY * tension;
+            // ==========================================
+            // تغییر اصلی: حذف حالت فنری و استفاده از درگ
+            // ==========================================
 
-            if (abs(accelerationX) > 1.0) forceX += -accelerationX * impulseMultiplier;
-            shadowVx += forceX; shadowVy += forceY;
-            let friction = 0.6;
-            shadowVx *= friction; shadowVy *= friction;
-            shadowOffsetX += shadowVx; shadowOffsetY += shadowVy;
+            // 1. تنظیم قدرت واکنش (Impulse)
+            // این عدد تعیین میکند چقدر سایه با حرکت شما پرت شود
+            // اگر خواستید واکنش بیشتر باشد، این را زیاد کنید (مثلا 2.0)
+            let impulseMultiplier = 1.2;
+
+            // اعمال نیرو فقط وقتی شتاب دارید
+            if (abs(accelerationX) > 0.5) {
+                shadowVx += -accelerationX * impulseMultiplier;
+            }
+            // برای محور Y معمولا واکنش کمتر قشنگ‌تر است
+            let accelerationY = currentVy - velocityY; // محاسبه شتاب Y
+            if (abs(accelerationY) > 0.5) {
+                shadowVy += -accelerationY * impulseMultiplier;
+            }
+
+            // 2. اعمال سرعت به مکان سایه
+            shadowOffsetX += shadowVx;
+            shadowOffsetY += shadowVy;
+
+            // 3. گرفتن سرعت (Friction/Drag)
+            // این باعث می‌شود سرعت پرتاب خیلی سریع میرا شود
+            // هرچه کمتر باشد (مثلا 0.5)، سایه زودتر سرعتش را از دست می‌دهد
+            shadowVx *= 0.6;
+            shadowVy *= 0.6;
+
+            // 4. بازگشت نرم به مرکز (بدون فنر)
+            // این خط جادویی است که لرزش را حذف می‌کند.
+            // عدد 0.1 سرعت بازگشت به جای اول است.
+            // اگر می‌خواهید سایه زودتر به بدن بچسبد، بکنید 0.15 یا 0.2
+            // اگر می‌خواهید دیرتر و تنبل‌تر برگردد، بکنید 0.05
+            let returnSpeed = 0.1;
+
+            shadowOffsetX = lerp(shadowOffsetX, 0, returnSpeed);
+            shadowOffsetY = lerp(shadowOffsetY, 0, returnSpeed);
+
         }
     } else {
-        shadowOffsetX = lerp(shadowOffsetX, 0, 0.2);
-        shadowOffsetY = lerp(shadowOffsetY, 0, 0.2);
+        // وقتی کسی نیست، سریع برگردد
+        shadowOffsetX = lerp(shadowOffsetX, 0, 0.1);
+        shadowOffsetY = lerp(shadowOffsetY, 0, 0.1);
     }
 }
 
